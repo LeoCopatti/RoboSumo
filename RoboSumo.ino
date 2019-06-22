@@ -21,7 +21,7 @@
 #define EchoDireita A0
 
 //Velocidades - Foi necessario usar o const int pois os valores nao podem ser definidos com o #define
-#define ReducaoVirada 40
+#define ReducaoVirada 70
 const int VelocidadeMaxima = 255;
 const int VelocidadeNormal = 110;
 
@@ -49,6 +49,7 @@ void setup() {
 }
 
 void VirarEsquerda(){
+  Serial.println("Virar");
   analogWrite(VelMotorB, ReducaoVirada);
   analogWrite(VelMotorA, VelocidadeNormal);
 }
@@ -124,18 +125,20 @@ void loop() {
     delay(1000);
   }
   else{
-    if (SensorSonar(TriggerFrente, EchoFrente) <= 5)
+    if (SensorSonar(TriggerFrente, EchoFrente) <= 7)
     {
-      Serial.println("Frente " + SensorSonar(TriggerFrente, EchoFrente));
+      Serial.println("Frente " + distancia);
       AndarFrente();
       AcelerarMaximo();
     }
-    else if (SensorSonar(TriggerEsquerda, EchoEsquerda) <= 5)
+    else if (SensorSonar(TriggerEsquerda, EchoEsquerda) <= 7)
     {
+      Serial.println("Esquerda " + distancia);
       VirarEsquerda();
     }
-    else if (SensorSonar(TriggerDireita, EchoDireita) <= 5)
+    else if (SensorSonar(TriggerDireita, EchoDireita) <= 7)
     {
+      Serial.println("Direita " + distancia);
       VirarDireita();
     }
     else
