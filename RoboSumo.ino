@@ -17,13 +17,17 @@
 #define EchoFrente 4
 #define TriggerEsquerda 3
 #define EchoEsquerda 2
-#define TriggerDireita 1
-#define EchoDireita 0
+#define TriggerDireita A1
+#define EchoDireita A0
 
 //Velocidades - Foi necessario usar o const int pois os valores nao podem ser definidos com o #define
-#define ReducaoVirada 70
+#define ReducaoVirada 40
 const int VelocidadeMaxima = 255;
-const int VelocidadeNormal = 170;
+const int VelocidadeNormal = 110;
+
+//Variaveis para o ultrassonico
+long duracao;
+int distancia;
 
 void setup() {
 
@@ -41,7 +45,7 @@ void setup() {
   pinMode(EchoDireita, INPUT);
   pinMode(EchoEsquerda, INPUT);
   pinMode(EchoFrente, INPUT);
-
+  Serial.begin(9600);
 }
 
 void VirarEsquerda(){
@@ -81,6 +85,62 @@ void AcelerarMaximo(){
   analogWrite(VelMotorA, VelocidadeMaxima);
 }
 
+int SensorSonar(int trigger,int echo)
+{
+  digitalWrite(trigger, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigger, LOW);
+  duracao = pulseIn(echo, HIGH);
+  distancia = duracao/58.2;
+
+  if (!distancia)
+  {
+    return 1000;
+  }
+  else
+  {
+    return distancia;
+  }
+}
+
 void loop() {
 
+  if (digitalRead(InfraFrente) == LOW)
+  {
+    Serial.println("Infra Frente");
+    AndarRe();
+    delay(1000);
+    VirarEsquerda();
+    delay(2000);
+    AndarFrente();
+  }
+  else if (digitalRead(InfraAtras) == LOW)
+  {
+    Serial.println("Infra Atras");
+    AndarFrente();
+    AcelerarMaximo();
+    delay(1000);
+  }
+  else{
+    if (SensorSonar(TriggerFrente, EchoFrente) <= 5)
+    {
+      Serial.println("Frente " + SensorSonar(TriggerFrente, EchoFrente));
+      AndarFrente();
+      AcelerarMaximo();
+    }
+    else if (SensorSonar(TriggerEsquerda, EchoEsquerda) <= 5)
+    {
+      VirarEsquerda();
+    }
+    else if (SensorSonar(TriggerDireita, EchoDireita) <= 5)
+    {
+      VirarDireita();
+    }
+    else
+    {
+       AndarFrente();
+    }
+  }
 }
