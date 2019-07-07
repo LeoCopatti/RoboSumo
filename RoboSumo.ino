@@ -1,24 +1,26 @@
+#include <NewPing.h>
+
 //Motor A - Direita
-#define VelMotorA 11
-#define MotorA1 12
-#define MotorA2 13
+#define VelMotorA 10
+#define MotorA1 5
+#define MotorA2 4
 
 //Motor B - Esquerda
-#define VelMotorB 10
-#define MotorB1 9
-#define MotorB2 8
+#define VelMotorB 11
+#define MotorB1 3
+#define MotorB2 2
 
 //Sensores Infravermelhos
-#define InfraFrente 7
-#define InfraAtras 6
+#define InfraFrente A4
+#define InfraAtras A5
 
 //Sensores Ultrassonicos
-#define TriggerFrente 5
-#define EchoFrente 4
-#define TriggerEsquerda 3
-#define EchoEsquerda 2
-#define TriggerDireita A1
-#define EchoDireita A0
+#define TriggerFrente 13
+#define EchoFrente 12
+#define TriggerEsquerda 7
+#define EchoEsquerda 6
+#define TriggerDireita 9
+#define EchoDireita 8
 
 //Velocidades - Foi necessario usar o const int pois os valores nao podem ser definidos com o #define
 #define ReducaoVirada 70
@@ -28,6 +30,10 @@ const int VelocidadeNormal = 110;
 //Variaveis para o ultrassonico
 long duracao;
 int distancia;
+
+NewPing sonarFrente(TriggerFrente, EchoFrente, 270);
+NewPing sonarEsquerda(TriggerEsquerda, EchoEsquerda, 270);
+NewPing sonarDireita(TriggerDireita, EchoDireita, 270); 
 
 void setup() {
 
@@ -49,7 +55,6 @@ void setup() {
 }
 
 void VirarEsquerda(){
-  Serial.println("Virar");
   analogWrite(VelMotorB, ReducaoVirada);
   analogWrite(VelMotorA, VelocidadeNormal);
 }
@@ -82,20 +87,29 @@ void AndarRe(){
 }
 
 void AcelerarMaximo(){
+  digitalWrite(MotorA1, HIGH);
+  digitalWrite(MotorB1, HIGH);
+
+  digitalWrite(MotorA2, LOW);
+  digitalWrite(MotorB2, LOW);
   analogWrite(VelMotorB, VelocidadeMaxima);
   analogWrite(VelMotorA, VelocidadeMaxima);
 }
 
 int SensorSonar(int trigger,int echo)
 {
+ 
   digitalWrite(trigger, LOW);
   delayMicroseconds(2);
   digitalWrite(trigger, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigger, LOW);
   duracao = pulseIn(echo, HIGH);
-  distancia = duracao/58.2;
-
+   Serial.println( trigger );
+  Serial.println(echo );
+  distancia = duracao / 58.2;
+   Serial.println(distancia);
+  delay(5000);
   if (!distancia)
   {
     return 1000;
@@ -106,9 +120,33 @@ int SensorSonar(int trigger,int echo)
   }
 }
 
+int verificaSonar(int son)
+{
+  if (son == 1)
+  {
+    distancia = sonarFrente.ping_median(5);
+    Serial.println(sonarFrente.convert_cm(distancia));
+    return sonarFrente.convert_cm(distancia);
+  }
+  else if (son == 2)
+  {
+    distancia = sonarEsquerda.ping_median(5);
+    delay(100);  
+    Serial.println(sonarFrente.convert_cm(distancia));
+    return sonarFrente.convert_cm(distancia);
+  }
+  else if (son == 3)
+  {
+    distancia = sonarDireita.ping_median(5);
+    delay(100); 
+    Serial.println(sonarFrente.convert_cm(distancia));
+    return sonarFrente.convert_cm(distancia);
+  }
+  
+}
 void loop() {
-
-  if (digitalRead(InfraFrente) == LOW)
+delay(50);
+ /* if (digitalRead(InfraFrente) == LOW)
   {
     Serial.println("Infra Frente");
     AndarRe();
@@ -120,30 +158,29 @@ void loop() {
   else if (digitalRead(InfraAtras) == LOW)
   {
     Serial.println("Infra Atras");
-    AndarFrente();
     AcelerarMaximo();
     delay(1000);
   }
-  else{
-    if (SensorSonar(TriggerFrente, EchoFrente) <= 7)
+  else{*/
+    if (verificaSonar(1) <= 15)
     {
-      Serial.println("Frente " + distancia);
-      AndarFrente();
+      Serial.println("Frente ");
       AcelerarMaximo();
     }
-    else if (SensorSonar(TriggerEsquerda, EchoEsquerda) <= 7)
+    else if (verificaSonar(2) <= 15)
     {
-      Serial.println("Esquerda " + distancia);
+      Serial.println("Esquerda ");
       VirarEsquerda();
     }
-    else if (SensorSonar(TriggerDireita, EchoDireita) <= 7)
+   /* else if (verificaSonar(3) <= 15)
     {
-      Serial.println("Direita " + distancia);
+      Serial.println("Direita ");
       VirarDireita();
-    }
+    }*/
     else
     {
+      Serial.println("Else");
        AndarFrente();
     }
-  }
+  //}
 }
