@@ -146,7 +146,7 @@ int verificaSonar(int son)
 }
 void loop() {
 delay(50);
- /* if (digitalRead(InfraFrente) == LOW)
+ if (digitalRead(InfraFrente) == LOW)
   {
     Serial.println("Infra Frente");
     AndarRe();
@@ -161,7 +161,7 @@ delay(50);
     AcelerarMaximo();
     delay(1000);
   }
-  else{*/
+  else{
     if (verificaSonar(1) <= 15)
     {
       Serial.println("Frente ");
