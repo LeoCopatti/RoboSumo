@@ -12,7 +12,7 @@
 
 //Sensores Infravermelhos
 #define InfraFrente A4
-#define InfraAtras A5
+#define InfraAtras A3
 
 //Sensores Ultrassonicos
 #define TriggerFrente 13
