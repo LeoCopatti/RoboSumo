@@ -145,42 +145,17 @@ int verificaSonar(int son)
   
 }
 void loop() {
-delay(50);
- if (digitalRead(InfraFrente) == LOW)
-  {
-    Serial.println("Infra Frente");
-    AndarRe();
-    delay(1000);
-    VirarEsquerda();
-    delay(2000);
-    AndarFrente();
-  }
-  else if (digitalRead(InfraAtras) == LOW)
-  {
-    Serial.println("Infra Atras");
-    AcelerarMaximo();
-    delay(1000);
-  }
-  else{
-    if (verificaSonar(1) <= 15)
-    {
-      Serial.println("Frente ");
-      AcelerarMaximo();
-    }
-    else if (verificaSonar(2) <= 15)
-    {
-      Serial.println("Esquerda ");
-      VirarEsquerda();
-    }
-   /* else if (verificaSonar(3) <= 15)
-    {
-      Serial.println("Direita ");
-      VirarDireita();
-    }*/
-    else
-    {
-      Serial.println("Else");
-       AndarFrente();
-    }
-  //}
+ delay(1000);
+ AndarFrente();
+ delay(1000);
+ AndarRe();
+ delay(1000);
+ VirarEsquerda();
+ delay(1000);
+ virarDireita();
+ delay(1000);
+ VirarEsquerda()
+ delay(3000);
+ VirarDireita(3000);
+ delay(3000);
 }
